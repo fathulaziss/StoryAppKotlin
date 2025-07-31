@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activity.StoryFormActivity">
+
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/custom_app_bar_back"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/iv_photo"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_marginVertical="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:scaleType="fitXY"
+        android:layout_below="@+id/app_bar"
+        tools:srcCompat="@tools:sample/backgrounds/scenic"
+        tools:ignore="ContentDescription" />
+
+    <LinearLayout
+        android:id="@+id/layout_source_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_photo"
+        android:gravity="center">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_camera"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="@string/camera" />
+
+        <Space
+            android:layout_width="16dp"
+            android:layout_height="0dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_gallery"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="@string/gallery" />
+    </LinearLayout>
+
+    <com.example.storyappkotlin.ui.component.CustomEditText
+        android:id="@+id/et_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:textSize="14sp"
+        android:hint="@string/description_hint"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="16dp"
+        android:gravity="top|start"
+        android:lineSpacingExtra="4dp"
+        android:layout_below="@+id/layout_source_image" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/et_description"
+        android:gravity="center">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_upload"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="@string/upload" />
+
+    </LinearLayout>
+
+</RelativeLayout>

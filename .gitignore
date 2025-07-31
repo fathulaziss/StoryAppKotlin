@@ -1,24 +1,77 @@
-# Compiled class file
+# Built application files
+*.apk
+*.ap_
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
 *.class
 
-# Log file
+# Generated files
+bin/
+gen/
+out/
+build/
+
+# Gradle files
+.gradle/
+!gradle-wrapper.jar
+local.properties
+
+# Signing files
+*.jks
+*.keystore
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Android Studio captures
+captures/
+
+# Kotlin specific
+*.kotlin_module
+
+# Log files
 *.log
 
-# BlueJ files
-*.ctxt
+# OS-specific
+.DS_Store
+Thumbs.db
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# Dependency caches
+.cxx/
+.externalNativeBuild/
+.kotlinc/
+.kts/
+*.lock
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
+# Lint and crash reports
+lint/reports/
+lint-results-*.xml
+*.hprof
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+# NDK
+obj/
+
+# Misc
+*.orig
+
+# Firebase / Crashlytics
+google-services.json
+fabric.properties
+crashlytics.properties
+
+# Jetpack Compose
+.compose-cache/
+
+# Testing
+test-results/
+test-output/
+
+# Local emulators / databases
+*.db
+*.db-journal

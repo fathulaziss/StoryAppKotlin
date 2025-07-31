@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomEditText">
+        <attr name="borderColor" format="color"/>
+        <attr name="focusBorderColor" format="color"/>
+        <attr name="errorBorderColor" format="color"/>
+        <attr name="cornerRadius" format="dimension"/>
+        <attr name="prefixIcon" format="reference"/>
+        <attr name="suffixIcon" format="reference"/>
+        <attr name="maxLines" format="integer"/>
+        <attr name="scrollHorizontally" format="boolean"/>
+    </declare-styleable>
+</resources>

@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">StoryAppKotlin</string>
+    <string name="splash_desc">Story App Splash Screen</string>
+    <string name="on_boarding_title">Selamat datang di Dicoding Story!</string>
+    <string name="on_boarding_desc">Mau berbagi ilmu tentang Android, iOS, Machine Learning, Cloud, Front-End, Back-End, dan bidang IT lainnya? Di Dicoding Story aja!</string>
+    <string name="login">Masuk</string>
+    <string name="register">Daftar</string>
+    <string name="login_title">Sudah siap untuk berbagi cerita?</string>
+    <string name="login_description">Masukkan dulu datamu ya</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login_email_hint">Masukkan Email</string>
+    <string name="login_password_hint">Masukkan Password</string>
+    <string name="register_title">Lengkapi data dirimu dibawah ini ya</string>
+    <string name="name">Nama</string>
+    <string name="name_hint">Masukkan Nama</string>
+    <string name="success">Berhasil</string>
+    <string name="failed">Gagal</string>
+    <string name="empty_name_validation">Name can\'t be empty</string>
+    <string name="empty_email_validation">Email can\'t be empty</string>
+    <string name="empty_password_validation">Password can\'t be empty</string>
+    <string name="not_yet_have_account">Belum mempunyai akun?</string>
+    <string name="story_form_appbar">New Story</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="description_hint">Description</string>
+    <string name="upload">Upload</string>
+    <string name="story_detail">Story Detail</string>
 </resources>

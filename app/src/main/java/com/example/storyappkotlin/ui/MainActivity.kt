@@ -1,0 +1,125 @@
+package com.example.storyappkotlin.ui
+
+import android.content.Intent
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.view.ViewCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import com.example.storyappkotlin.R
+import com.example.storyappkotlin.data.remote.dto.StoryDto
+import com.example.storyappkotlin.databinding.ActivityMainBinding
+import com.example.storyappkotlin.ui.adapter.list.StoriesAdapter
+import com.example.storyappkotlin.ui.viewmodel.StoryViewModel
+import com.example.storyappkotlin.ui.viewmodel.ViewModelFactory
+import com.example.storyappkotlin.utils.SharedPreferenceUtil
+import com.example.storyappkotlin.data.remote.Result
+import com.example.storyappkotlin.ui.activity.LoginActivity
+import com.example.storyappkotlin.ui.activity.StoryDetailActivity
+import com.example.storyappkotlin.ui.activity.StoryFormActivity
+
+class MainActivity : AppCompatActivity(), StoriesAdapter.OnItemClickListener {
+
+    private val TAG = MainActivity::class.java.simpleName;
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var storiesAdapter: StoriesAdapter
+    private lateinit var pref: SharedPreferenceUtil
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        val toolbar = binding.appBar.toolbarTitleAppBar
+        setSupportActionBar(toolbar)
+        toolbar.title = getString(R.string.app_name)
+
+        pref = SharedPreferenceUtil(this)
+
+        val factory = ViewModelFactory.getInstance(this)
+        val storyViewModel = ViewModelProvider(this, factory).get(StoryViewModel::class.java)
+
+        binding.rvStories.apply {
+            layoutManager = GridLayoutManager(this@MainActivity, 2)
+            setHasFixedSize(true)
+        }
+
+        storiesAdapter = StoriesAdapter(this, this)
+        binding.rvStories.adapter = storiesAdapter
+
+        val token = "Bearer ${pref.getToken()}"
+        val page = 1
+        val size = 10
+        val location = 0
+
+        storyViewModel.getStories(this, token, page, size, location)
+        storyViewModel.getStoryResult().observe(this, Observer { result ->
+            if (result != null) {
+                when (result) {
+                    is Result.Loading -> {
+                        binding.pbLoading.visibility = View.VISIBLE
+                    }
+                    is Result.Success -> {
+                        binding.pbLoading.visibility = View.GONE
+                        val stories = result.data.listStory.orEmpty()
+                        storiesAdapter.submitList(stories)
+                    }
+                    is Result.Error -> {
+                        binding.pbLoading.visibility = View.GONE
+                        Toast.makeText(
+                            this,
+                            getString(R.string.failed) + ": ${result.error}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        })
+
+        binding.fabAdd.setOnClickListener {
+            val intent = Intent(this, StoryFormActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.toolbar_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_sign_out) {
+            pref.removeToken()
+            Toast.makeText(this, "Signing out...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, LoginActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            startActivity(intent)
+            finish()
+            return true
+        } else {
+            return super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onItemClicked(story: StoryDto, sharedImageView: ImageView) {
+        val intent = Intent(this, StoryDetailActivity::class.java).apply {
+            putExtra("id", story.id)
+            putExtra("transitionName", ViewCompat.getTransitionName(sharedImageView))
+        }
+        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+            this,
+            sharedImageView,
+            ViewCompat.getTransitionName(sharedImageView) ?: ""
+        )
+        startActivity(intent, options.toBundle())
+    }
+}
