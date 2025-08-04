@@ -26,4 +26,6 @@
     <string name="description_hint">Description</string>
     <string name="upload">Upload</string>
     <string name="story_detail">Story Detail</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="map">Map</string>
 </resources>

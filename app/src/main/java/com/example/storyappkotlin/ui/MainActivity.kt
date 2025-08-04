@@ -22,6 +22,8 @@ import com.example.storyappkotlin.ui.viewmodel.ViewModelFactory
 import com.example.storyappkotlin.utils.SharedPreferenceUtil
 import com.example.storyappkotlin.data.remote.Result
 import com.example.storyappkotlin.ui.activity.LoginActivity
+import com.example.storyappkotlin.ui.activity.MapActivity
+import com.example.storyappkotlin.ui.activity.RegisterActivity
 import com.example.storyappkotlin.ui.activity.StoryDetailActivity
 import com.example.storyappkotlin.ui.activity.StoryFormActivity
 
@@ -61,7 +63,7 @@ class MainActivity : AppCompatActivity(), StoriesAdapter.OnItemClickListener {
         val location = 0
 
         storyViewModel.getStories(this, token, page, size, location)
-        storyViewModel.getStoryResult().observe(this, Observer { result ->
+        storyViewModel.getStoryResult().observe(this) { result ->
             if (result != null) {
                 when (result) {
                     is Result.Loading -> {
@@ -82,7 +84,7 @@ class MainActivity : AppCompatActivity(), StoriesAdapter.OnItemClickListener {
                     }
                 }
             }
-        })
+        }
 
         binding.fabAdd.setOnClickListener {
             val intent = Intent(this, StoryFormActivity::class.java)
@@ -104,6 +106,10 @@ class MainActivity : AppCompatActivity(), StoriesAdapter.OnItemClickListener {
             }
             startActivity(intent)
             finish()
+            return true
+        } else if (item.itemId == R.id.action_map) {
+            val intent = Intent(this, MapActivity::class.java)
+            startActivity(intent)
             return true
         } else {
             return super.onOptionsItemSelected(item)

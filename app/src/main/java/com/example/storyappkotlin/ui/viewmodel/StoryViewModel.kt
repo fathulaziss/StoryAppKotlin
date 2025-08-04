@@ -24,8 +24,8 @@ class StoryViewModel(private val storyRepository: StoryRepository): ViewModel() 
     fun getStories(
         lifecycleOwner: LifecycleOwner,
         token: String,
-        page: Int,
-        size: Int,
+        page: Int?,
+        size: Int?,
         location: Int
     ) {
         storyRepository.getStories(token, page, size, location).observe(lifecycleOwner) {

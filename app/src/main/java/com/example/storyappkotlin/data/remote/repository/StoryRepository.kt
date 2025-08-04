@@ -35,8 +35,8 @@ class StoryRepository private constructor(private val apiService: ApiService) {
 
     fun getStories(
         token: String,
-        page: Int,
-        size: Int,
+        page: Int?,
+        size: Int?,
         location: Int
     ): LiveData<Result<StoryResponse>> {
         storiesResult.value = Result.Loading
