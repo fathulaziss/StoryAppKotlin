@@ -21,7 +21,6 @@ import com.example.storyappkotlin.utils.SharedPreferenceUtil
 
 class StoryDetailActivity : AppCompatActivity() {
 
-    private val TAG = StoryDetailActivity::class.java.simpleName
     private lateinit var binding: ActivityStoryDetailBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +42,7 @@ class StoryDetailActivity : AppCompatActivity() {
         val token = "Bearer ${pref.getToken()}"
 
         val factory = ViewModelFactory.getInstance(this)
-        val storyViewModel = ViewModelProvider(this, factory).get(StoryViewModel::class.java)
+        val storyViewModel = ViewModelProvider(this, factory)[StoryViewModel::class.java]
 
         if (id != null) {
             storyViewModel.getDetailStory(this, token, id)
@@ -100,7 +99,7 @@ class StoryDetailActivity : AppCompatActivity() {
                     }
 
                     is Result.Error -> {
-                        binding.tvDesc.text = "Data Not Found!"
+                        binding.tvDesc.text = getString(R.string.data_not_found)
                         binding.pbLoading.visibility = View.GONE
                         Toast.makeText(
                             this,

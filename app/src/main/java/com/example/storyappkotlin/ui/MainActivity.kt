@@ -2,6 +2,7 @@ package com.example.storyappkotlin.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -10,26 +11,24 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.ViewCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.storyappkotlin.R
+import com.example.storyappkotlin.data.remote.Result
 import com.example.storyappkotlin.data.remote.dto.StoryDto
 import com.example.storyappkotlin.databinding.ActivityMainBinding
+import com.example.storyappkotlin.ui.activity.LoginActivity
+import com.example.storyappkotlin.ui.activity.MapActivity
+import com.example.storyappkotlin.ui.activity.StoryDetailActivity
+import com.example.storyappkotlin.ui.activity.StoryFormActivity
 import com.example.storyappkotlin.ui.adapter.list.StoriesAdapter
 import com.example.storyappkotlin.ui.viewmodel.StoryViewModel
 import com.example.storyappkotlin.ui.viewmodel.ViewModelFactory
 import com.example.storyappkotlin.utils.SharedPreferenceUtil
-import com.example.storyappkotlin.data.remote.Result
-import com.example.storyappkotlin.ui.activity.LoginActivity
-import com.example.storyappkotlin.ui.activity.MapActivity
-import com.example.storyappkotlin.ui.activity.RegisterActivity
-import com.example.storyappkotlin.ui.activity.StoryDetailActivity
-import com.example.storyappkotlin.ui.activity.StoryFormActivity
 
 class MainActivity : AppCompatActivity(), StoriesAdapter.OnItemClickListener {
 
-    private val TAG = MainActivity::class.java.simpleName;
+    private val TAG = MainActivity::class.java.simpleName
     private lateinit var binding: ActivityMainBinding
     private lateinit var storiesAdapter: StoriesAdapter
     private lateinit var pref: SharedPreferenceUtil
@@ -47,7 +46,7 @@ class MainActivity : AppCompatActivity(), StoriesAdapter.OnItemClickListener {
         pref = SharedPreferenceUtil(this)
 
         val factory = ViewModelFactory.getInstance(this)
-        val storyViewModel = ViewModelProvider(this, factory).get(StoryViewModel::class.java)
+        val storyViewModel = ViewModelProvider(this, factory)[StoryViewModel::class.java]
 
         binding.rvStories.apply {
             layoutManager = GridLayoutManager(this@MainActivity, 2)
@@ -72,6 +71,7 @@ class MainActivity : AppCompatActivity(), StoriesAdapter.OnItemClickListener {
                     is Result.Success -> {
                         binding.pbLoading.visibility = View.GONE
                         val stories = result.data.listStory.orEmpty()
+                        Log.d(TAG,"stories size = " + stories.size)
                         storiesAdapter.submitList(stories)
                     }
                     is Result.Error -> {
@@ -98,21 +98,25 @@ class MainActivity : AppCompatActivity(), StoriesAdapter.OnItemClickListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_sign_out) {
-            pref.removeToken()
-            Toast.makeText(this, "Signing out...", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, LoginActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        when (item.itemId) {
+            R.id.action_sign_out -> {
+                pref.removeToken()
+                Toast.makeText(this, "Signing out...", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, LoginActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                startActivity(intent)
+                finish()
+                return true
             }
-            startActivity(intent)
-            finish()
-            return true
-        } else if (item.itemId == R.id.action_map) {
-            val intent = Intent(this, MapActivity::class.java)
-            startActivity(intent)
-            return true
-        } else {
-            return super.onOptionsItemSelected(item)
+            R.id.action_map -> {
+                val intent = Intent(this, MapActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            else -> {
+                return super.onOptionsItemSelected(item)
+            }
         }
     }
 

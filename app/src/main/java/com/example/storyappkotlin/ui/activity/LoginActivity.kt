@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -32,7 +33,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         pref = SharedPreferenceUtil(this)
 
         val factory = ViewModelFactory.getInstance(this)
-        authViewModel = ViewModelProvider(this, factory).get(AuthViewModel::class.java)
+        authViewModel = ViewModelProvider(this, factory)[AuthViewModel::class.java]
 
         binding.main.viewTreeObserver.addOnPreDrawListener {
             isKeyboardVisible()
@@ -57,6 +58,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
                     val res = result.data
                     val data = res.loginResult
+                    Log.d(TAG,"data = $data")
                     pref.setToken(data.token)
                     pref.setAlreadyHaveAccount(true)
                     Toast.makeText(

@@ -14,18 +14,17 @@ import com.example.storyappkotlin.utils.SharedPreferenceUtil
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
 
-    private lateinit var pref: SharedPreferenceUtil;
-    private val TAG = SplashActivity::class.java.simpleName;
+    private lateinit var pref: SharedPreferenceUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val binding = ActivitySplashBinding.inflate(layoutInflater);
-        setContentView(binding.root);
+        val binding = ActivitySplashBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        pref = SharedPreferenceUtil(this);
-        checkToken();
+        pref = SharedPreferenceUtil(this)
+        checkToken()
     }
 
     private fun checkToken() {

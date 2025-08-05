@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
+    private val TAG = MapActivity::class.java.simpleName
     private lateinit var binding: ActivityMapBinding
     private lateinit var pref: SharedPreferenceUtil
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -52,7 +53,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         val factory = ViewModelFactory.getInstance(this)
-        val storyViewModel = ViewModelProvider(this, factory).get(StoryViewModel::class.java)
+        val storyViewModel = ViewModelProvider(this, factory)[StoryViewModel::class.java]
 
         val token = "Bearer ${pref.getToken()}"
         val page = null
@@ -70,7 +71,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                         binding.pbLoading.visibility = View.GONE
                         stories = result.data.listStory.orEmpty()
                         addStoryMarkers()
-                        Log.d("","stories size = " + stories?.size)
+                        Log.d(TAG,"stories size = " + stories?.size)
                     }
                     is Result.Error -> {
                         binding.pbLoading.visibility = View.GONE
@@ -107,10 +108,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         deviceId: Int
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
-        if (requestCode == 1001 &&
-            grantResults.isNotEmpty() &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (requestCode == 1001 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             enableMyLocation()
             addStoryMarkers()
         }
@@ -134,11 +132,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         // Center map on user's current location
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
                     val userLatLng = LatLng(location.latitude, location.longitude)
@@ -163,15 +157,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun enableMyLocation() {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED ||
-            ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             googleMap.isMyLocationEnabled = true
         } else {
             ActivityCompat.requestPermissions(

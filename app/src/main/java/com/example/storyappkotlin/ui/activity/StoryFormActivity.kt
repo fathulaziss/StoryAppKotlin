@@ -1,6 +1,9 @@
 package com.example.storyappkotlin.ui.activity
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import com.example.storyappkotlin.BuildConfig
@@ -22,6 +26,8 @@ import com.example.storyappkotlin.ui.viewmodel.StoryViewModel
 import com.example.storyappkotlin.ui.viewmodel.ViewModelFactory
 import com.example.storyappkotlin.utils.CustomLoadingDialog
 import com.example.storyappkotlin.utils.SharedPreferenceUtil
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -31,6 +37,7 @@ class StoryFormActivity : AppCompatActivity() {
 
     private val TAG = StoryFormActivity::class.java.simpleName
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var storyViewModel: StoryViewModel
     private lateinit var binding: ActivityStoryFormBinding
     private lateinit var pref: SharedPreferenceUtil
@@ -38,6 +45,8 @@ class StoryFormActivity : AppCompatActivity() {
     private lateinit var launcherCamera: ActivityResultLauncher<Uri>
     private lateinit var launcherGallery: ActivityResultLauncher<PickVisualMediaRequest>
     private var currentImageUri: Uri? = null
+    private var lat: Double? = null
+    private var lon: Double? = null
 
     private val page = 1
     private val size = 10
@@ -58,6 +67,8 @@ class StoryFormActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         launcherCamera =
             registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
@@ -83,8 +94,17 @@ class StoryFormActivity : AppCompatActivity() {
                 }
             }
 
+        binding.cbUseLocation.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                enableMyLocation()
+            } else {
+                lat = null
+                lon = null
+            }
+        }
+
         val factory = ViewModelFactory.getInstance(this)
-        storyViewModel = ViewModelProvider(this, factory).get(StoryViewModel::class.java)
+        storyViewModel = ViewModelProvider(this, factory)[StoryViewModel::class.java]
 
         storyViewModel.getUploadStoryResult().observe(this) { result ->
             when (result) {
@@ -115,6 +135,30 @@ class StoryFormActivity : AppCompatActivity() {
         binding.btnUpload.setOnClickListener { uploadStory() }
     }
 
+    @SuppressLint("MissingPermission")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1001 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    lat = location.latitude
+                    lon = location.longitude
+                    binding.cbUseLocation.isChecked = true
+                    Log.d(TAG, "Permission granted. Location: $lat, $lon")
+                } else {
+                    Toast.makeText(this, "Unable to get location", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            binding.cbUseLocation.isChecked = false
+            Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun startGallery() {
         launcherGallery.launch(PickVisualMediaRequest())
     }
@@ -122,6 +166,31 @@ class StoryFormActivity : AppCompatActivity() {
     private fun startCamera() {
         currentImageUri = getImageUri(this)
         currentImageUri?.let { launcherCamera.launch(it) }
+    }
+
+    private fun enableMyLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    lat = location.latitude
+                    lon = location.longitude
+                    Log.d(TAG, "Location: $lat, $lon")
+                } else {
+                    Toast.makeText(this, "Unable to get location", Toast.LENGTH_SHORT).show()
+                    binding.cbUseLocation.isChecked = false
+                }
+            }
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                1001
+            )
+        }
     }
 
     private fun uploadStory() {
@@ -141,7 +210,7 @@ class StoryFormActivity : AppCompatActivity() {
         Log.d(TAG, "desc = $desc")
         Log.d(TAG, "file = ${file?.path}")
 
-        storyViewModel.uploadStory(this, token, desc, file, null, null)
+        storyViewModel.uploadStory(this, token, desc, file, lat?.toFloat(), lon?.toFloat())
     }
 
     private fun getImageUri(context: Context): Uri {
