@@ -4,7 +4,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.paging.PagingData
 import com.example.storyappkotlin.data.remote.Result
+import com.example.storyappkotlin.data.remote.dto.StoryDto
 import com.example.storyappkotlin.data.remote.repository.StoryRepository
 import com.example.storyappkotlin.data.remote.response.StoryResponse
 import java.io.File
@@ -14,6 +16,14 @@ class StoryViewModel(private val storyRepository: StoryRepository): ViewModel() 
     private val getStoryResult = MutableLiveData<Result<StoryResponse>>()
     private val uploadStoryResult = MutableLiveData<Result<StoryResponse>>()
     private val getDetailStoryResult = MutableLiveData<Result<StoryResponse>>()
+
+    private var _pagedStories : LiveData<PagingData<StoryDto>>? = null
+    val getPagedStoryResult: LiveData<PagingData<StoryDto>>?
+        get() = _pagedStories
+
+    fun getPagedStory(token: String, location: Int) {
+        _pagedStories = storyRepository.getPagedStories(token, location)
+    }
 
     fun getStoryResult(): LiveData<Result<StoryResponse>> = getStoryResult
 

@@ -3,9 +3,15 @@ package com.example.storyappkotlin.data.remote.repository
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.liveData
 import com.example.storyappkotlin.data.remote.response.StoryResponse
 import com.example.storyappkotlin.data.remote.retrofit.ApiService
 import com.example.storyappkotlin.data.remote.Result
+import com.example.storyappkotlin.data.remote.dto.StoryDto
+import com.example.storyappkotlin.data.remote.paging.StoryPagingSource
 import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -71,6 +77,15 @@ class StoryRepository private constructor(private val apiService: ApiService) {
         })
 
         return storiesResult
+    }
+
+    fun getPagedStories(token: String, location: Int): LiveData<PagingData<StoryDto>> {
+        return Pager(
+            config = PagingConfig(pageSize = 5),
+            pagingSourceFactory = {
+                StoryPagingSource(apiService, token, location)
+            }
+        ).liveData
     }
 
     fun getDetailStory(token: String, id: String): LiveData<Result<StoryResponse>> {

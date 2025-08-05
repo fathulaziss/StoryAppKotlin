@@ -2,10 +2,8 @@ package com.example.storyappkotlin.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,23 +12,25 @@ import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.storyappkotlin.R
-import com.example.storyappkotlin.data.remote.Result
 import com.example.storyappkotlin.data.remote.dto.StoryDto
 import com.example.storyappkotlin.databinding.ActivityMainBinding
 import com.example.storyappkotlin.ui.activity.LoginActivity
 import com.example.storyappkotlin.ui.activity.MapActivity
 import com.example.storyappkotlin.ui.activity.StoryDetailActivity
 import com.example.storyappkotlin.ui.activity.StoryFormActivity
+import com.example.storyappkotlin.ui.adapter.list.LoadingStateAdapter
 import com.example.storyappkotlin.ui.adapter.list.StoriesAdapter
+import com.example.storyappkotlin.ui.adapter.list.StoryPagingAdapter
 import com.example.storyappkotlin.ui.viewmodel.StoryViewModel
 import com.example.storyappkotlin.ui.viewmodel.ViewModelFactory
 import com.example.storyappkotlin.utils.SharedPreferenceUtil
 
-class MainActivity : AppCompatActivity(), StoriesAdapter.OnItemClickListener {
+class MainActivity : AppCompatActivity(), StoryPagingAdapter.OnItemClickListener {
 
     private val TAG = MainActivity::class.java.simpleName
     private lateinit var binding: ActivityMainBinding
     private lateinit var storiesAdapter: StoriesAdapter
+    private lateinit var storyAdapter: StoryPagingAdapter
     private lateinit var pref: SharedPreferenceUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,43 +48,56 @@ class MainActivity : AppCompatActivity(), StoriesAdapter.OnItemClickListener {
         val factory = ViewModelFactory.getInstance(this)
         val storyViewModel = ViewModelProvider(this, factory)[StoryViewModel::class.java]
 
-        binding.rvStories.apply {
-            layoutManager = GridLayoutManager(this@MainActivity, 2)
-            setHasFixedSize(true)
-        }
+//        binding.rvStories.apply {
+//            layoutManager = GridLayoutManager(this@MainActivity, 2)
+//            setHasFixedSize(true)
+//        }
 
-        storiesAdapter = StoriesAdapter(this, this)
-        binding.rvStories.adapter = storiesAdapter
+//        storiesAdapter = StoriesAdapter(this, this)
+//        binding.rvStories.adapter = storiesAdapter
 
         val token = "Bearer ${pref.getToken()}"
         val page = 1
         val size = 10
         val location = 0
 
-        storyViewModel.getStories(this, token, page, size, location)
-        storyViewModel.getStoryResult().observe(this) { result ->
-            if (result != null) {
-                when (result) {
-                    is Result.Loading -> {
-                        binding.pbLoading.visibility = View.VISIBLE
-                    }
-                    is Result.Success -> {
-                        binding.pbLoading.visibility = View.GONE
-                        val stories = result.data.listStory.orEmpty()
-                        Log.d(TAG,"stories size = " + stories.size)
-                        storiesAdapter.submitList(stories)
-                    }
-                    is Result.Error -> {
-                        binding.pbLoading.visibility = View.GONE
-                        Toast.makeText(
-                            this,
-                            getString(R.string.failed) + ": ${result.error}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }
+        storyAdapter = StoryPagingAdapter(this, this)
+        binding.rvStories.apply {
+            layoutManager = GridLayoutManager(this@MainActivity, 2)
+            adapter = storyAdapter.withLoadStateFooter(
+                footer = LoadingStateAdapter { storyAdapter.retry() }
+            )
         }
+
+        storyViewModel.getPagedStory(token, location)
+        storyViewModel.getPagedStoryResult?.observe(this) { pagingData ->
+            storyAdapter.submitData(lifecycle, pagingData)
+        }
+
+//        storyViewModel.getStories(this, token, page, size, location)
+//        storyViewModel.getStoryResult().observe(this) { result ->
+//            if (result != null) {
+//                when (result) {
+//                    is Result.Loading -> {
+//                        binding.pbLoading.visibility = View.VISIBLE
+//                    }
+//                    is Result.Success -> {
+//                        binding.pbLoading.visibility = View.GONE
+//                        val stories = result.data.listStory.orEmpty()
+//                        Log.d(TAG,"stories size = " + stories.size)
+//                        storiesAdapter.submitList(stories)
+//                    }
+//                    is Result.Error -> {
+//                        binding.pbLoading.visibility = View.GONE
+//                        Toast.makeText(
+//                            this,
+//                            getString(R.string.failed) + ": ${result.error}",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//                }
+//            }
+//        }
 
         binding.fabAdd.setOnClickListener {
             val intent = Intent(this, StoryFormActivity::class.java)
