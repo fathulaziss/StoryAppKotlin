@@ -3,10 +3,14 @@ package com.example.storyappkotlin.data.remote.repository
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.liveData
+import com.example.storyappkotlin.data.StoryRemoteMediator
+import com.example.storyappkotlin.data.local.database.DatabaseApp
+import com.example.storyappkotlin.data.local.entity.Story
 import com.example.storyappkotlin.data.remote.response.StoryResponse
 import com.example.storyappkotlin.data.remote.retrofit.ApiService
 import com.example.storyappkotlin.data.remote.Result
@@ -22,7 +26,7 @@ import retrofit2.Response
 import java.io.File
 import java.io.IOException
 
-class StoryRepository private constructor(private val apiService: ApiService) {
+class StoryRepository private constructor(private val database: DatabaseApp, private val apiService: ApiService) {
     private val TAG = StoryRepository::class.java.simpleName
 
     private val storiesResult = MediatorLiveData<Result<StoryResponse>>()
@@ -33,9 +37,9 @@ class StoryRepository private constructor(private val apiService: ApiService) {
         @Volatile
         private var INSTANCE: StoryRepository? = null
 
-        fun getInstance(apiService: ApiService): StoryRepository =
+        fun getInstance(database: DatabaseApp, apiService: ApiService): StoryRepository =
             INSTANCE ?: synchronized(this) {
-                INSTANCE ?: StoryRepository(apiService).also { INSTANCE = it }
+                INSTANCE ?: StoryRepository(database, apiService).also { INSTANCE = it }
         }
     }
 
@@ -84,6 +88,17 @@ class StoryRepository private constructor(private val apiService: ApiService) {
             config = PagingConfig(pageSize = 5),
             pagingSourceFactory = {
                 StoryPagingSource(apiService, token, location)
+            }
+        ).liveData
+    }
+
+    fun getRemoteMediatorPagedStories(token: String, location: Int): LiveData<PagingData<Story>> {
+        @OptIn(ExperimentalPagingApi::class)
+        return Pager(
+            config = PagingConfig(pageSize = 5),
+            remoteMediator = StoryRemoteMediator(database, apiService, token, location),
+            pagingSourceFactory = {
+                database.storyDao().getStories()
             }
         ).liveData
     }

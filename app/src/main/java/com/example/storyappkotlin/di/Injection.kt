@@ -1,6 +1,7 @@
 package com.example.storyappkotlin.di
 
 import android.content.Context
+import com.example.storyappkotlin.data.local.database.DatabaseApp
 import com.example.storyappkotlin.data.remote.repository.AuthRepository
 import com.example.storyappkotlin.data.remote.repository.StoryRepository
 import com.example.storyappkotlin.data.remote.retrofit.ApiConfig
@@ -14,6 +15,7 @@ object Injection {
 
     fun provideStoryRepository(context: Context): StoryRepository {
         val apiService = ApiConfig.getApiService()
-        return StoryRepository.getInstance(apiService)
+        val database = DatabaseApp.getDatabase(context)
+        return StoryRepository.getInstance(database, apiService)
     }
 }

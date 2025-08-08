@@ -12,13 +12,14 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.storyappkotlin.R
+import com.example.storyappkotlin.data.local.entity.Story
 import com.example.storyappkotlin.data.remote.dto.StoryDto
 import com.example.storyappkotlin.utils.diffcallback.StoryDiffCallback
 
 class StoriesAdapter(
     private val context: Context,
     private val onItemClickListener: OnItemClickListener
-) : ListAdapter<StoryDto, StoriesAdapter.StoriesViewHolder>(StoryDiffCallback) {
+) : ListAdapter<Story, StoriesAdapter.StoriesViewHolder>(StoryDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : StoriesAdapter.StoriesViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.story_item, parent, false)
@@ -58,6 +59,6 @@ class StoriesAdapter(
     }
 
     interface OnItemClickListener {
-        fun onItemClicked(story: StoryDto, sharedImageView: ImageView)
+        fun onItemClicked(story: Story, sharedImageView: ImageView)
     }
 }

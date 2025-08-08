@@ -14,5 +14,5 @@ data class StoryResponse(
     val story: StoryDto?,
 
     @SerializedName("listStory")
-    val listStory: List<StoryDto>?
+    val listStory: List<StoryDto>
 )

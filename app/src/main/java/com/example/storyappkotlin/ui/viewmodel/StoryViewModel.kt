@@ -4,7 +4,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.example.storyappkotlin.data.local.entity.Story
 import com.example.storyappkotlin.data.remote.Result
 import com.example.storyappkotlin.data.remote.dto.StoryDto
 import com.example.storyappkotlin.data.remote.repository.StoryRepository
@@ -17,12 +20,20 @@ class StoryViewModel(private val storyRepository: StoryRepository): ViewModel() 
     private val uploadStoryResult = MutableLiveData<Result<StoryResponse>>()
     private val getDetailStoryResult = MutableLiveData<Result<StoryResponse>>()
 
-    private var _pagedStories : LiveData<PagingData<StoryDto>>? = null
-    val getPagedStoryResult: LiveData<PagingData<StoryDto>>?
-        get() = _pagedStories
+    private var _pagedStories : LiveData<PagingData<StoryDto>> = MutableLiveData()
+    val getPagedStoryResult: LiveData<PagingData<StoryDto>> get() = _pagedStories
 
     fun getPagedStory(token: String, location: Int) {
         _pagedStories = storyRepository.getPagedStories(token, location)
+    }
+
+    private var _pagedStoriesRM: LiveData<PagingData<Story>> = MutableLiveData()
+    val getStoryResultRM: LiveData<PagingData<Story>> get() = _pagedStoriesRM
+
+    fun loadStories(token: String, location: Int) {
+        _pagedStoriesRM = storyRepository
+            .getRemoteMediatorPagedStories(token, location)
+            .cachedIn(viewModelScope)
     }
 
     fun getStoryResult(): LiveData<Result<StoryResponse>> = getStoryResult

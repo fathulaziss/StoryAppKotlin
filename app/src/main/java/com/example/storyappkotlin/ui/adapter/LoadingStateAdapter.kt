@@ -1,4 +1,4 @@
-package com.example.storyappkotlin.ui.adapter.list
+package com.example.storyappkotlin.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.View

@@ -12,25 +12,25 @@ import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.storyappkotlin.R
-import com.example.storyappkotlin.data.remote.dto.StoryDto
+import com.example.storyappkotlin.data.local.entity.Story
 import com.example.storyappkotlin.databinding.ActivityMainBinding
 import com.example.storyappkotlin.ui.activity.LoginActivity
 import com.example.storyappkotlin.ui.activity.MapActivity
 import com.example.storyappkotlin.ui.activity.StoryDetailActivity
 import com.example.storyappkotlin.ui.activity.StoryFormActivity
-import com.example.storyappkotlin.ui.adapter.list.LoadingStateAdapter
+import com.example.storyappkotlin.ui.adapter.LoadingStateAdapter
 import com.example.storyappkotlin.ui.adapter.list.StoriesAdapter
-import com.example.storyappkotlin.ui.adapter.list.StoryPagingAdapter
+import com.example.storyappkotlin.ui.adapter.list.StoriesPagingAdapter
 import com.example.storyappkotlin.ui.viewmodel.StoryViewModel
 import com.example.storyappkotlin.ui.viewmodel.ViewModelFactory
 import com.example.storyappkotlin.utils.SharedPreferenceUtil
 
-class MainActivity : AppCompatActivity(), StoryPagingAdapter.OnItemClickListener {
+class MainActivity : AppCompatActivity(), StoriesPagingAdapter.OnItemClickListener {
 
     private val TAG = MainActivity::class.java.simpleName
     private lateinit var binding: ActivityMainBinding
     private lateinit var storiesAdapter: StoriesAdapter
-    private lateinit var storyAdapter: StoryPagingAdapter
+    private lateinit var storiesPagingAdapter: StoriesPagingAdapter
     private lateinit var pref: SharedPreferenceUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,17 +61,17 @@ class MainActivity : AppCompatActivity(), StoryPagingAdapter.OnItemClickListener
         val size = 10
         val location = 0
 
-        storyAdapter = StoryPagingAdapter(this, this)
+        storiesPagingAdapter = StoriesPagingAdapter(this, this)
         binding.rvStories.apply {
             layoutManager = GridLayoutManager(this@MainActivity, 2)
-            adapter = storyAdapter.withLoadStateFooter(
-                footer = LoadingStateAdapter { storyAdapter.retry() }
+            adapter = storiesPagingAdapter.withLoadStateFooter(
+                footer = LoadingStateAdapter { storiesPagingAdapter.retry() }
             )
         }
 
-        storyViewModel.getPagedStory(token, location)
-        storyViewModel.getPagedStoryResult?.observe(this) { pagingData ->
-            storyAdapter.submitData(lifecycle, pagingData)
+        storyViewModel.loadStories(token, location)
+        storyViewModel.getStoryResultRM.observe(this) { pagingData ->
+            storiesPagingAdapter.submitData(lifecycle, pagingData)
         }
 
 //        storyViewModel.getStories(this, token, page, size, location)
@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity(), StoryPagingAdapter.OnItemClickListener
         }
     }
 
-    override fun onItemClicked(story: StoryDto, sharedImageView: ImageView) {
+    override fun onItemClicked(story: Story, sharedImageView: ImageView) {
         val intent = Intent(this, StoryDetailActivity::class.java).apply {
             putExtra("id", story.id)
             putExtra("transitionName", ViewCompat.getTransitionName(sharedImageView))
