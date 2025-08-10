@@ -1,11 +1,14 @@
 package com.example.storyappkotlin.ui
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.ViewCompat
@@ -29,9 +32,11 @@ class MainActivity : AppCompatActivity(), StoriesPagingAdapter.OnItemClickListen
 
     private val TAG = MainActivity::class.java.simpleName
     private lateinit var binding: ActivityMainBinding
+    private lateinit var storyViewModel: StoryViewModel
     private lateinit var storiesAdapter: StoriesAdapter
     private lateinit var storiesPagingAdapter: StoriesPagingAdapter
     private lateinit var pref: SharedPreferenceUtil
+    private lateinit var addStoryLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +51,7 @@ class MainActivity : AppCompatActivity(), StoriesPagingAdapter.OnItemClickListen
         pref = SharedPreferenceUtil(this)
 
         val factory = ViewModelFactory.getInstance(this)
-        val storyViewModel = ViewModelProvider(this, factory)[StoryViewModel::class.java]
+        storyViewModel = ViewModelProvider(this, factory)[StoryViewModel::class.java]
 
 //        binding.rvStories.apply {
 //            layoutManager = GridLayoutManager(this@MainActivity, 2)
@@ -57,8 +62,6 @@ class MainActivity : AppCompatActivity(), StoriesPagingAdapter.OnItemClickListen
 //        binding.rvStories.adapter = storiesAdapter
 
         val token = "Bearer ${pref.getToken()}"
-        val page = 1
-        val size = 10
         val location = 0
 
         storiesPagingAdapter = StoriesPagingAdapter(this, this)
@@ -99,9 +102,17 @@ class MainActivity : AppCompatActivity(), StoriesPagingAdapter.OnItemClickListen
 //            }
 //        }
 
+        addStoryLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                storiesPagingAdapter.refresh()
+            }
+        }
+
         binding.fabAdd.setOnClickListener {
             val intent = Intent(this, StoryFormActivity::class.java)
-            startActivity(intent)
+            addStoryLauncher.launch(intent)
         }
     }
 

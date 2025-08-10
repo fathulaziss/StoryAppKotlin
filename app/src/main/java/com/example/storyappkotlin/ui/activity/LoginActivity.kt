@@ -83,7 +83,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-                else -> {}
+                else -> {
+                    // do nothing
+                }
             }
         }
 

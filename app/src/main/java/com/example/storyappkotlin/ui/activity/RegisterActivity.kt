@@ -67,6 +67,9 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
                         binding.btnRegister.visibility = View.VISIBLE
                         Toast.makeText(this, getString(R.string.failed) + ": ${it.error}", Toast.LENGTH_SHORT).show()
                     }
+                    else -> {
+                        // do nothing
+                    }
                 }
             }
         }

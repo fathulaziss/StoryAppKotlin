@@ -48,10 +48,6 @@ class StoryFormActivity : AppCompatActivity() {
     private var lat: Double? = null
     private var lon: Double? = null
 
-    private val page = 1
-    private val size = 10
-    private val location = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -113,13 +109,15 @@ class StoryFormActivity : AppCompatActivity() {
                     loadingDialog.dismiss()
                     val message = result.data.message
                     Toast.makeText(this, getString(R.string.success) + " : $message", Toast.LENGTH_SHORT).show()
-                    val token = "Bearer ${pref.getToken()}"
-                    storyViewModel.getStories(this, token, page, size, location)
+                    setResult(RESULT_OK)
                     finish()
                 }
                 is Result.Error -> {
                     loadingDialog.dismiss()
                     Toast.makeText(this, getString(R.string.failed) + " : ${result.error}", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    // do nothing
                 }
             }
         }
