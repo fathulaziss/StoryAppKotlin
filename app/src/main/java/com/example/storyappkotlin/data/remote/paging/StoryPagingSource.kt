@@ -17,7 +17,7 @@ class StoryPagingSource(
             val size = params.loadSize
 
             val response = apiService.getPagedStories(token, page, size, location)
-            val stories = response.listStory ?: emptyList()
+            val stories = response.listStory
 
             LoadResult.Page(
                 data = stories,

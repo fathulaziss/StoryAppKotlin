@@ -19,7 +19,8 @@ import com.example.storyappkotlin.data.remote.paging.StoryPagingSource
 import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -147,11 +148,11 @@ class StoryRepository private constructor(private val database: DatabaseApp, pri
     ): LiveData<Result<StoryResponse>> {
         uploadResult.value = Result.Loading
 
-        val descriptionBody = RequestBody.create("text/plain".toMediaTypeOrNull(), description)
-        val latBody = lat?.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it.toString()) }
-        val lonBody = lon?.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it.toString()) }
+        val descriptionBody = description.toRequestBody("text/plain".toMediaTypeOrNull())
+        val latBody = lat?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull())
+        val lonBody = lon?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull())
 
-        val requestFile = photo?.let { RequestBody.create("image/*".toMediaTypeOrNull(), photo) }
+        val requestFile = photo?.asRequestBody("image/*".toMediaTypeOrNull())
         val photoPart = requestFile?.let { MultipartBody.Part.createFormData("photo", photo.name, requestFile) }
 
         val client = apiService.uploadStory(token, descriptionBody, photoPart, latBody, lonBody)

@@ -26,6 +26,7 @@ import com.example.storyappkotlin.ui.adapter.list.StoriesAdapter
 import com.example.storyappkotlin.ui.adapter.list.StoriesPagingAdapter
 import com.example.storyappkotlin.ui.viewmodel.StoryViewModel
 import com.example.storyappkotlin.ui.viewmodel.ViewModelFactory
+import com.example.storyappkotlin.utils.IntentKeys
 import com.example.storyappkotlin.utils.SharedPreferenceUtil
 
 class MainActivity : AppCompatActivity(), StoriesPagingAdapter.OnItemClickListener {
@@ -146,8 +147,8 @@ class MainActivity : AppCompatActivity(), StoriesPagingAdapter.OnItemClickListen
 
     override fun onItemClicked(story: Story, sharedImageView: ImageView) {
         val intent = Intent(this, StoryDetailActivity::class.java).apply {
-            putExtra("id", story.id)
-            putExtra("transitionName", ViewCompat.getTransitionName(sharedImageView))
+            putExtra(IntentKeys.STORY_ID, story.id)
+            putExtra(IntentKeys.TRANSITION_NAME, ViewCompat.getTransitionName(sharedImageView))
         }
         val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
             this,

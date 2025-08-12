@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.storyappkotlin.R
 import com.example.storyappkotlin.data.local.entity.Story
-import com.example.storyappkotlin.data.remote.dto.StoryDto
 import com.example.storyappkotlin.utils.diffcallback.StoryDiffCallback
 
 class StoriesAdapter(

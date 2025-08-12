@@ -19,16 +19,6 @@ class AuthRepository private constructor(private val apiService: ApiService) {
     private val registerResult = MediatorLiveData<Result<RegisterResponse>>()
     private val loginResult = MediatorLiveData<Result<LoginResponse>>()
 
-    companion object {
-        @Volatile
-        private var INSTANCE: AuthRepository? = null
-
-        fun getInstance(apiService: ApiService): AuthRepository =
-            INSTANCE ?: synchronized(this) {
-                INSTANCE ?: AuthRepository(apiService).also { INSTANCE = it }
-        }
-    }
-
     fun register(name: String, email: String, password: String): LiveData<Result<RegisterResponse>> {
         registerResult.value = Result.Loading
 
@@ -98,5 +88,15 @@ class AuthRepository private constructor(private val apiService: ApiService) {
         })
 
         return loginResult
+    }
+
+    companion object {
+        @Volatile
+        private var INSTANCE: AuthRepository? = null
+
+        fun getInstance(apiService: ApiService): AuthRepository =
+            INSTANCE ?: synchronized(this) {
+                INSTANCE ?: AuthRepository(apiService).also { INSTANCE = it }
+            }
     }
 }

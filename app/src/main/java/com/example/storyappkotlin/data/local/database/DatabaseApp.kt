@@ -8,6 +8,7 @@ import com.example.storyappkotlin.data.local.dao.RemoteKeysDao
 import com.example.storyappkotlin.data.local.dao.StoryDao
 import com.example.storyappkotlin.data.local.entity.RemoteKeys
 import com.example.storyappkotlin.data.local.entity.Story
+import com.example.storyappkotlin.utils.AppDatabaseConstants
 
 @Database(
     entities = [Story::class, RemoteKeys::class],
@@ -28,9 +29,9 @@ abstract class DatabaseApp : RoomDatabase() {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
-                    DatabaseApp::class.java, "database_app"
+                    DatabaseApp::class.java, AppDatabaseConstants.APP_DB
                 )
-                    .fallbackToDestructiveMigration()
+                    .fallbackToDestructiveMigration(true)
                     .build()
                     .also { INSTANCE = it }
             }

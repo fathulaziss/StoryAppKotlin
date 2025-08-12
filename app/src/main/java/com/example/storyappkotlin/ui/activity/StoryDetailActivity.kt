@@ -17,6 +17,7 @@ import com.example.storyappkotlin.data.remote.Result
 import com.example.storyappkotlin.databinding.ActivityStoryDetailBinding
 import com.example.storyappkotlin.ui.viewmodel.StoryViewModel
 import com.example.storyappkotlin.ui.viewmodel.ViewModelFactory
+import com.example.storyappkotlin.utils.IntentKeys
 import com.example.storyappkotlin.utils.SharedPreferenceUtil
 
 class StoryDetailActivity : AppCompatActivity() {
@@ -27,7 +28,7 @@ class StoryDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityStoryDetailBinding.inflate(layoutInflater)
 
-        val transitionName = intent.getStringExtra("transitionName")
+        val transitionName = intent.getStringExtra(IntentKeys.TRANSITION_NAME)
         ViewCompat.setTransitionName(binding.ivPhoto, transitionName)
 
         setContentView(binding.root)
@@ -38,7 +39,7 @@ class StoryDetailActivity : AppCompatActivity() {
 
         val pref = SharedPreferenceUtil(this)
 
-        val id = intent.getStringExtra("id")
+        val id = intent.getStringExtra(IntentKeys.STORY_ID)
         val token = "Bearer ${pref.getToken()}"
 
         val factory = ViewModelFactory.getInstance(this)
