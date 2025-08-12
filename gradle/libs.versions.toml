@@ -19,8 +19,8 @@ roomPaging = "2.4.0-rc01"
 roomCommonJvm = "2.7.2"
 coreTesting = "2.1.0"
 kotlinxCoroutinesTest = "1.6.1"
-mockitoCore = "4.4.0"
-mockitoInline = "4.4.0"
+mockitoCore = "5.18.0"
+mockitoInline = "5.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
