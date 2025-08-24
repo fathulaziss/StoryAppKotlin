@@ -28,7 +28,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private val TAG = MapActivity::class.java.simpleName
+    private val tag = MapActivity::class.java.simpleName
     private lateinit var binding: ActivityMapBinding
     private lateinit var pref: SharedPreferenceUtil
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -38,6 +38,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(tag, "onCreate MapActivity")
 
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -71,7 +72,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                         binding.pbLoading.visibility = View.GONE
                         stories = result.data.listStory.orEmpty()
                         addStoryMarkers()
-                        Log.d(TAG,"stories size = " + stories?.size)
+                        Log.d(tag,"stories size = " + stories?.size)
                     }
                     is Result.Error -> {
                         binding.pbLoading.visibility = View.GONE

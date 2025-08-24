@@ -16,7 +16,7 @@
         android:id="@+id/tv_error_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="An error occurred"
+        android:text="@string/an_error_occurred"
         android:textColor="@android:color/holo_red_dark"
         android:paddingTop="8dp"
         android:visibility="gone" />
@@ -25,6 +25,6 @@
         android:id="@+id/btn_retry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Retry"
+        android:text="@string/retry"
         android:visibility="gone" />
 </LinearLayout>

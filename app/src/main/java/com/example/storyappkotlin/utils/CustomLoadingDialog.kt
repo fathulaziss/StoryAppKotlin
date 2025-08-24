@@ -10,17 +10,22 @@ import com.example.storyappkotlin.R
 class CustomLoadingDialog(context: Context) : Dialog(context) {
 
     init {
-        val window = requireNotNull(window);
-        val params: WindowManager.LayoutParams = window.attributes;
+        val window = requireNotNull(window)
+        val params: WindowManager.LayoutParams = window.attributes
 
-        params.gravity = Gravity.CENTER_HORIZONTAL;
-        window.attributes = params;
+        params.gravity = Gravity.CENTER_HORIZONTAL
+        window.attributes = params
 
-        setTitle(null);
-        setCancelable(false);
-        setOnCancelListener(null);
+        setTitle(null)
+        setCancelable(false)
+        setOnCancelListener(null)
 
-        val view = LayoutInflater.from(context).inflate(R.layout.custom_loading_indicator, null);
-        setContentView(view);
+        val view = LayoutInflater.from(context).inflate(
+            R.layout.custom_loading_indicator,
+            findViewById(android.R.id.content), // parent
+            false // don’t attach immediately
+        )
+
+        setContentView(view)
     }
 }

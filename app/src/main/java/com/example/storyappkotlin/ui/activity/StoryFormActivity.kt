@@ -5,7 +5,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -35,7 +37,7 @@ import java.io.IOException
 
 class StoryFormActivity : AppCompatActivity() {
 
-    private val TAG = StoryFormActivity::class.java.simpleName
+    private val tag = StoryFormActivity::class.java.simpleName
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var storyViewModel: StoryViewModel
@@ -50,6 +52,7 @@ class StoryFormActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(tag,"onCreate StoryFormActivity")
 
         binding = ActivityStoryFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -146,7 +149,7 @@ class StoryFormActivity : AppCompatActivity() {
                     lat = location.latitude
                     lon = location.longitude
                     binding.cbUseLocation.isChecked = true
-                    Log.d(TAG, "Permission granted. Location: $lat, $lon")
+                    Log.d(tag, "Permission granted. Location: $lat, $lon")
                 } else {
                     Toast.makeText(this, "Unable to get location", Toast.LENGTH_SHORT).show()
                 }
@@ -173,7 +176,7 @@ class StoryFormActivity : AppCompatActivity() {
                 if (location != null) {
                     lat = location.latitude
                     lon = location.longitude
-                    Log.d(TAG, "Location: $lat, $lon")
+                    Log.d(tag, "Location: $lat, $lon")
                 } else {
                     Toast.makeText(this, "Unable to get location", Toast.LENGTH_SHORT).show()
                     binding.cbUseLocation.isChecked = false
@@ -204,9 +207,9 @@ class StoryFormActivity : AppCompatActivity() {
             }
         }
 
-        Log.d(TAG, "token = $token")
-        Log.d(TAG, "desc = $desc")
-        Log.d(TAG, "file = ${file?.path}")
+        Log.d(tag, "token = $token")
+        Log.d(tag, "desc = $desc")
+        Log.d(tag, "file = ${file?.path}")
 
         storyViewModel.uploadStory(this, token, desc, file, lat?.toFloat(), lon?.toFloat())
     }
@@ -219,7 +222,7 @@ class StoryFormActivity : AppCompatActivity() {
         imageFile.parentFile?.let { parent ->
             if (!parent.exists()) {
                 val isCreated = parent.mkdirs()
-                Log.d(TAG, "isCreateFileSuccess : $isCreated")
+                Log.d(tag, "isCreateFileSuccess : $isCreated")
             }
         }
 
@@ -230,8 +233,14 @@ class StoryFormActivity : AppCompatActivity() {
         )
     }
 
+    @Suppress("DEPRECATION")
     private fun getFileFromUri(context: Context, uri: Uri): File {
-        val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+        val bitmap: Bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val source = ImageDecoder.createSource(context.contentResolver, uri)
+            ImageDecoder.decodeBitmap(source)
+        } else {
+            MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+        }
         val outputDir = context.cacheDir
         val outputFile = File.createTempFile("compressed_", ".jpg", outputDir)
 

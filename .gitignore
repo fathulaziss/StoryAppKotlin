@@ -17,7 +17,11 @@ build/
 # Gradle files
 .gradle/
 !gradle-wrapper.jar
+
+# Local and secret configs
 local.properties
+secrets.properties
+local.defaults.properties
 
 # Signing files
 *.jks

@@ -19,13 +19,14 @@ import com.example.storyappkotlin.ui.MainActivity
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
-    private val TAG = LoginActivity::class.java.simpleName
+    private val tag = LoginActivity::class.java.simpleName
     private lateinit var binding: ActivityLoginBinding
     private lateinit var authViewModel: AuthViewModel
     private lateinit var pref: SharedPreferenceUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(tag, "onCreate Login Activity")
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -58,7 +59,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
                     val res = result.data
                     val data = res.loginResult
-                    Log.d(TAG,"data = $data")
+                    Log.d(tag,"data = $data")
                     pref.setToken(data.token)
                     pref.setAlreadyHaveAccount(true)
                     Toast.makeText(

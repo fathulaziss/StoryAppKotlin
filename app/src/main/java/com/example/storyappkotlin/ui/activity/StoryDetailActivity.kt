@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
@@ -77,19 +78,19 @@ class StoryDetailActivity : AppCompatActivity() {
                                     override fun onLoadFailed(
                                         e: GlideException?,
                                         model: Any?,
-                                        target: Target<Drawable>?,
-                                        isFirstResource: Boolean,
+                                        target: Target<Drawable>,
+                                        isFirstResource: Boolean
                                     ): Boolean {
                                         supportStartPostponedEnterTransition()
                                         return false
                                     }
 
                                     override fun onResourceReady(
-                                        resource: Drawable?,
-                                        model: Any?,
-                                        target: Target<Drawable>?,
-                                        dataSource: com.bumptech.glide.load.DataSource?,
-                                        isFirstResource: Boolean,
+                                        resource: Drawable,
+                                        model: Any,
+                                        target: Target<Drawable>,
+                                        dataSource: DataSource,
+                                        isFirstResource: Boolean
                                     ): Boolean {
                                         supportStartPostponedEnterTransition()
                                         return false

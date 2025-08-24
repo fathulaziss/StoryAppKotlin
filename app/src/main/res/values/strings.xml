@@ -30,4 +30,6 @@
     <string name="map">Map</string>
     <string name="enable_current_location">Enable current location</string>
     <string name="data_not_found">Data Not Found!</string>
+    <string name="an_error_occurred">An error occurred</string>
+    <string name="retry">Retry</string>
 </resources>

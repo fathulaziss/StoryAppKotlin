@@ -27,14 +27,16 @@ class ViewModelFactory private constructor(
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return when {
+        val viewModel: ViewModel = when {
             modelClass.isAssignableFrom(AuthViewModel::class.java) -> {
-                AuthViewModel(authRepository) as T
+                AuthViewModel(authRepository)
             }
             modelClass.isAssignableFrom(StoryViewModel::class.java) -> {
-                StoryViewModel(storyRepository) as T
+                StoryViewModel(storyRepository)
             }
-            else -> throw IllegalArgumentException("Unknown ViewModel class:: ${modelClass.name}")
+            else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
+        @Suppress("UNCHECKED_CAST")
+        return viewModel as T
     }
 }
